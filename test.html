@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+        .box {
+            /* flex-basis: 500px; */
+            /* height: 1000px; */
+           display: flex;
+           flex-direction: column;
+           flex-wrap: wrap;
+        }
+        .flex img{
+            display: block;
+        }
+    </style>
+</head>
+<body>
+    <div class="box">
+    </div>
+    <script>
+        var box=document.querySelector(".box")
+        // 生成img标签
+        function createImgs() {
+        var str=""
+        for (let i = 0; i <= 40; i++) {
+            str+=`<div class="flex"><img src="./img/${i}.jpg" alt=""></div>`
+        }
+        box.innerHTML=str
+        }
+        // 改变box元素高度
+        function changeBoxHeight() {
+            box.style.height=splitArray(getImgHeightArr(),getColums())+"px"
+        }
+        // 获取全部img元素高度的数组
+        function getImgHeightArr() {
+            var imgs=document.querySelectorAll(".flex img")
+            let arr=[]
+            for (let i = 0; i < imgs.length; i++) {
+            const img = imgs[i];
+            console.log(getComputedStyle(img).height,"###");
+            arr.push(parseInt(getComputedStyle(img).height))
+            }
+            console.log(arr);
+            return arr
+        }
+        
+        var imgWidth=230
+        // 获取当前页面尺寸下能放多少列图片
+        function getColums() {
+            var w=parseInt(document.querySelector(".box").clientWidth)
+            var colums=Math.floor(w/230)
+            return colums
+        }
+/**
+ * @param {number[]} nums
+ * @param {number} m
+ * @return {number}
+ */
+// 对数组进行子数组分割
+var splitArray = function(nums, m) {
+  let len = nums.length,
+    sumList = Array(len + 1).fill(0),
+    dp = Array.from({ length: len + 1 }, () => Array(m + 1).fill(Number.MAX_VALUE));
+
+  // 逐位增加，反面后面根据区间求区间和
+  for (let i = 0; i < len; i++) {
+    sumList[i + 1] = sumList[i] + nums[i];
+  }
+
+  // 默认值
+  dp[0][0] = 0;
+
+  for (let i = 1; i <= len; i++) {
+    for (let j = 1; j <= Math.min(m, i); j++) {
+      // 前i个数分成j段
+      for (let x = j - 1; x < i; x++) {
+        // x最后一段的起点
+        // perv本轮分割完成 分段中最大的和
+        let prev = Math.max(dp[x][j - 1], sumList[i] - sumList[x])
+        // 该分割情况下最大分段和的最小值
+        dp[i][j] = Math.min(prev, dp[i][j])
+      }
+    }
+  }
+
+  return dp[len][m]
+};
+    createImgs()
+    window.addEventListener("resize",changeBoxHeight)
+    window.addEventListener('load',changeBoxHeight)
+    </script>
+</body>
+</html>
